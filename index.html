@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operation: Iron Frame - 8 Week Military Conditioning</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome (for icons, using standard text/unicode fallback if needed) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'mil-base': '#F5F5F0',       // Light Warm Grey/Beige
+                        'mil-olive': '#4B5320',      // Military Green
+                        'mil-olive-light': '#748032',
+                        'mil-slate': '#3C4142',      // Dark Slate
+                        'mil-sand': '#D2B48C',       // Tan accent
+                        'mil-alert': '#8B0000',      // Deep Red for alerts
+                    },
+                    fontFamily: {
+                        sans: ['Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                        mono: ['Courier New', 'Courier', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #F5F5F0;
+            color: #333;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .tab-active {
+            border-bottom: 3px solid #4B5320;
+            color: #4B5320;
+            font-weight: bold;
+        }
+        .day-btn-active {
+            background-color: #4B5320;
+            color: white;
+        }
+        /* Custom scrollbar for tactical feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e0e0e0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4B5320;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Chosen Palette: Tactical Clean (Warm Neutrals, Olive Drab, Dark Slate) -->
+    <!-- Application Structure Plan: 
+         1. Mission Brief (Header/Hero): Snapshot of trainee profile and core objectives.
+         2. Tactical Overview (Dashboard): Visual breakdown of muscle focus (Donut) and Strength Metrics (Bar).
+         3. The 8-Week Protocol (Core Interaction): A master control panel allowing users to toggle between Training Phases (Weeks) and Daily Operations (Days). This updates a dynamic 'Daily Orders' card.
+         4. Performance Trajectory (Analytics): Line charts projecting the 8-week progression for Pushups, Situps, and Run times.
+         5. Support Logistics (Posture & Nutrition): Accordion/Cards for diet plan, supplements, and specific posture drills.
+         Rationale: The user (military style trainee) needs clear orders. A dashboard structure allows "at a glance" status, while the interactive schedule removes clutter, showing only today's mission. -->
+    
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- Navigation / Header -->
+    <header class="bg-mil-slate text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <span class="text-2xl font-mono font-bold tracking-widest text-mil-sand">OP: IRON FRAME</span>
+            </div>
+            <nav class="hidden md:flex space-x-6 text-sm font-semibold tracking-wide">
+                <a href="#briefing" class="hover:text-mil-sand transition">BRIEFING</a>
+                <a href="#protocol" class="hover:text-mil-sand transition">PROTOCOL</a>
+                <a href="#logistics" class="hover:text-mil-sand transition">LOGISTICS</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-8 space-y-12">
+
+        <!-- SECTION 1: MISSION BRIEFING -->
+        <section id="briefing" class="space-y-6">
+            <div class="bg-white p-6 rounded-lg shadow border-l-4 border-mil-olive">
+                <h2 class="text-2xl font-bold text-mil-olive mb-2 uppercase tracking-wide">Mission Briefing</h2>
+                <p class="text-gray-600 mb-4">
+                    Welcome to the 8-Week Military Conditioning Protocol. This section outlines your current profile and the strategic objectives of this deployment. Review your constraints and targets before engaging the physical protocol.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-gray-100 p-4 rounded text-center">
+                        <p class="text-xs text-gray-500 uppercase">Operative</p>
+                        <p class="font-bold text-lg">Male, 28y</p>
+                    </div>
+                    <div class="bg-gray-100 p-4 rounded text-center">
+                        <p class="text-xs text-gray-500 uppercase">Composition</p>
+                        <p class="font-bold text-lg">167cm / 60kg</p>
+                    </div>
+                    <div class="bg-gray-100 p-4 rounded text-center">
+                        <p class="text-xs text-gray-500 uppercase">Baseline Strength</p>
+                        <p class="font-bold text-lg">30 Pushups (Fail)</p>
+                    </div>
+                    <div class="bg-gray-100 p-4 rounded text-center">
+                        <p class="text-xs text-gray-500 uppercase">Primary Goal</p>
+                        <p class="font-bold text-lg text-mil-olive">Hypertrophy & Posture</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Training Focus Chart -->
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">Target Allocation</h3>
+                        <p class="text-sm text-gray-500">Distribution of training volume based on physical objectives.</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="focusChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Progression Projection -->
+                <div class="bg-white p-6 rounded-lg shadow">
+                     <div class="mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">Projected Strength Yield</h3>
+                        <p class="text-sm text-gray-500">Estimated push-up capacity growth over 8 weeks.</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="progressionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: THE PROTOCOL (Interactive Schedule) -->
+        <section id="protocol" class="space-y-6">
+            <div class="border-b-2 border-gray-200 pb-2">
+                <h2 class="text-2xl font-bold text-mil-olive uppercase tracking-wide">Execution Protocol</h2>
+                <p class="text-gray-600 mt-2">
+                    This is your interactive command center. Select the active **Phase** (Week) to load the strategic parameters, then select the **Day** to view your specific Daily Orders. Ensure all sets are executed with strict form.
+                </p>
+            </div>
+
+            <!-- Phase Selectors -->
+            <div class="flex flex-wrap gap-2 justify-center md:justify-start" id="phaseControls">
+                <button onclick="setPhase(1)" id="phase1Btn" class="px-6 py-2 rounded-full border-2 border-mil-olive bg-mil-olive text-white font-bold hover:bg-mil-olive-light transition">Weeks 1-2 (Base)</button>
+                <button onclick="setPhase(2)" id="phase2Btn" class="px-6 py-2 rounded-full border-2 border-mil-olive text-mil-olive font-bold hover:bg-mil-olive hover:text-white transition">Weeks 3-4 (Build)</button>
+                <button onclick="setPhase(3)" id="phase3Btn" class="px-6 py-2 rounded-full border-2 border-mil-olive text-mil-olive font-bold hover:bg-mil-olive hover:text-white transition">Weeks 5-6 (Peak)</button>
+                <button onclick="setPhase(4)" id="phase4Btn" class="px-6 py-2 rounded-full border-2 border-mil-olive text-mil-olive font-bold hover:bg-mil-olive hover:text-white transition">Weeks 7-8 (Test)</button>
+            </div>
+
+            <!-- Main Dashboard Area -->
+            <div class="bg-white rounded-xl shadow-xl overflow-hidden flex flex-col md:flex-row min-h-[500px]">
+                <!-- Sidebar: Days -->
+                <div class="w-full md:w-1/4 bg-gray-50 border-r border-gray-200 p-4 flex flex-col gap-2">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Daily Operations</h4>
+                    <button onclick="setDay('Mon')" id="btnMon" class="day-btn text-left px-4 py-3 rounded hover:bg-gray-200 font-semibold transition flex justify-between"><span>Mon</span> <span class="text-xs opacity-50 bg-gray-200 px-1 rounded">Strength A</span></button>
+                    <button onclick="setDay('Tue')" id="btnTue" class="day-btn text-left px-4 py-3 rounded hover:bg-gray-200 font-semibold transition flex justify-between"><span>Tue</span> <span class="text-xs opacity-50 bg-gray-200 px-1 rounded">Cardio/Abs</span></button>
+                    <button onclick="setDay('Wed')" id="btnWed" class="day-btn text-left px-4 py-3 rounded hover:bg-gray-200 font-semibold transition flex justify-between"><span>Wed</span> <span class="text-xs opacity-50 bg-gray-200 px-1 rounded">Strength B</span></button>
+                    <button onclick="setDay('Thu')" id="btnThu" class="day-btn text-left px-4 py-3 rounded hover:bg-gray-200 font-semibold transition flex justify-between"><span>Thu</span> <span class="text-xs opacity-50 bg-gray-200 px-1 rounded">Cardio/Pos</span></button>
+                    <button onclick="setDay('Fri')" id="btnFri" class="day-btn text-left px-4 py-3 rounded hover:bg-gray-200 font-semibold transition flex justify-between"><span>Fri</span> <span class="text-xs opacity-50 bg-gray-200 px-1 rounded">Strength C</span></button>
+                    <button onclick="setDay('Sat')" id="btnSat" class="day-btn text-left px-4 py-3 rounded hover:bg-gray-200 font-semibold transition flex justify-between"><span>Sat</span> <span class="text-xs opacity-50 bg-gray-200 px-1 rounded">Active Rec</span></button>
+                    <button onclick="setDay('Sun')" id="btnSun" class="day-btn text-left px-4 py-3 rounded hover:bg-gray-200 font-semibold transition flex justify-between"><span>Sun</span> <span class="text-xs opacity-50 bg-gray-200 px-1 rounded">Rest</span></button>
+                </div>
+
+                <!-- Content: The Workout -->
+                <div class="w-full md:w-3/4 p-6 md:p-8 bg-white relative">
+                    <div id="workoutContent" class="space-y-6">
+                        <!-- Header populated by JS -->
+                        <div class="flex justify-between items-end border-b pb-4">
+                            <div>
+                                <h3 id="workoutTitle" class="text-3xl font-bold text-mil-olive">MONDAY: UPPER BODY A</h3>
+                                <p id="workoutFocus" class="text-sm text-gray-500 uppercase tracking-widest mt-1">Focus: Chest, Shoulders, Triceps</p>
+                            </div>
+                            <div class="text-right">
+                                <span id="estDuration" class="block text-2xl font-mono font-bold text-mil-slate">45 MIN</span>
+                                <span class="text-xs text-gray-400">EST. DURATION</span>
+                            </div>
+                        </div>
+
+                        <!-- Table -->
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-left text-sm">
+                                <thead class="bg-gray-100 text-gray-600 uppercase font-bold text-xs">
+                                    <tr>
+                                        <th class="px-4 py-3 rounded-tl-lg">Exercise</th>
+                                        <th class="px-4 py-3">Sets</th>
+                                        <th class="px-4 py-3">Reps</th>
+                                        <th class="px-4 py-3">Rest</th>
+                                        <th class="px-4 py-3 rounded-tr-lg">Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="exerciseTableBody" class="divide-y divide-gray-100">
+                                    <!-- Dynamic Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Special Instructions -->
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-6">
+                            <h5 class="font-bold text-yellow-800 text-sm uppercase mb-1">Tactical Note</h5>
+                            <p id="tacticalNote" class="text-sm text-yellow-700">Maintain a 2-0-2 Tempo. 2 seconds down, no pause, 2 seconds up.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: LOGISTICS (Nutrition & Posture) -->
+        <section id="logistics" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <!-- Nutrition Card -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
+                <div class="bg-mil-slate text-white p-4">
+                    <h3 class="font-bold uppercase tracking-wide"><i class="fas fa-utensils mr-2"></i>Fuel Logistics</h3>
+                </div>
+                <div class="p-6 flex-grow">
+                     <p class="text-sm text-gray-600 mb-4">
+                        Proper fueling is critical for muscle growth and recovery. Below is your optimized meal structure based on available resources and dietary constraints.
+                    </p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="w-16 flex-shrink-0 text-center">
+                                <span class="block font-bold text-mil-olive">AM</span>
+                                <span class="text-xs text-gray-400">Fasted</span>
+                            </div>
+                            <div class="ml-4 border-l-2 border-gray-200 pl-4">
+                                <h4 class="font-bold text-gray-800">Hydration & Mobility</h4>
+                                <p class="text-sm text-gray-600">500ml Water + Pinch of Salt. No food (per preference).</p>
+                                <p class="text-xs text-mil-olive mt-1">Supplements: Caffeine (200mg)</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="w-16 flex-shrink-0 text-center">
+                                <span class="block font-bold text-mil-olive">PM 1</span>
+                                <span class="text-xs text-gray-400">Lunch</span>
+                            </div>
+                            <div class="ml-4 border-l-2 border-gray-200 pl-4">
+                                <h4 class="font-bold text-gray-800">Protein Anchor</h4>
+                                <p class="text-sm text-gray-600">200g Chicken Breast/Meat, Large Mixed Salad (No sugary dressing).</p>
+                                <p class="text-xs text-mil-olive mt-1">Supplements: Collagen</p>
+                            </div>
+                        </div>
+
+                         <div class="flex items-start">
+                            <div class="w-16 flex-shrink-0 text-center">
+                                <span class="block font-bold text-mil-olive">PRE</span>
+                                <span class="text-xs text-gray-400">Workout</span>
+                            </div>
+                            <div class="ml-4 border-l-2 border-gray-200 pl-4">
+                                <h4 class="font-bold text-gray-800">Performance Priming</h4>
+                                <p class="text-sm text-gray-600">Pre-Workout Supplement (30 mins prior).</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="w-16 flex-shrink-0 text-center">
+                                <span class="block font-bold text-mil-olive">PM 2</span>
+                                <span class="text-xs text-gray-400">Dinner</span>
+                            </div>
+                            <div class="ml-4 border-l-2 border-gray-200 pl-4">
+                                <h4 class="font-bold text-gray-800">Recovery & Growth</h4>
+                                <p class="text-sm text-gray-600">200g Meat, 2 Cups Rice (Carb Loading), Salad.</p>
+                                <p class="text-xs text-mil-olive mt-1">Supplements: Creatine (5g), Protein Shake</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Posture Correction Card -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
+                <div class="bg-mil-slate text-white p-4">
+                    <h3 class="font-bold uppercase tracking-wide"><i class="fas fa-user-md mr-2"></i>Posture Correction</h3>
+                </div>
+                <div class="p-6 flex-grow">
+                    <p class="text-sm text-gray-600 mb-4">
+                        Targeting "Forward Head Posture" and shoulder alignment. These drills are mandatory and should be performed on Tuesday, Thursday, and Saturday.
+                    </p>
+                    
+                    <div class="space-y-3">
+                        <!-- Drill 1 -->
+                        <div class="bg-gray-50 rounded p-3 border border-gray-200">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-mil-olive text-sm">1. Chin Tucks</span>
+                                <span class="text-xs bg-gray-200 px-2 py-0.5 rounded">3 x 15 reps</span>
+                            </div>
+                            <p class="text-xs text-gray-600">Stand against wall. Pull chin straight back (make a double chin) until head touches wall. Hold 2s.</p>
+                        </div>
+
+                        <!-- Drill 2 -->
+                        <div class="bg-gray-50 rounded p-3 border border-gray-200">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-mil-olive text-sm">2. Wall Angels</span>
+                                <span class="text-xs bg-gray-200 px-2 py-0.5 rounded">3 x 10 reps</span>
+                            </div>
+                            <p class="text-xs text-gray-600">Back flat on wall, arms at 90°. Slide arms up maintaining contact with wall. Do not arch back.</p>
+                        </div>
+
+                        <!-- Drill 3 -->
+                        <div class="bg-gray-50 rounded p-3 border border-gray-200">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-mil-olive text-sm">3. Band/Towel Pull-Aparts</span>
+                                <span class="text-xs bg-gray-200 px-2 py-0.5 rounded">3 x 20 reps</span>
+                            </div>
+                            <p class="text-xs text-gray-600">Hold towel/band with straight arms. Pull apart by squeezing shoulder blades together. Don't shrug.</p>
+                        </div>
+                        
+                         <!-- Drill 4 -->
+                        <div class="bg-gray-50 rounded p-3 border border-gray-200">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-mil-olive text-sm">4. Doorway Stretch</span>
+                                <span class="text-xs bg-gray-200 px-2 py-0.5 rounded">2 x 30 sec</span>
+                            </div>
+                            <p class="text-xs text-gray-600">Arms on door frame at 90°. Lean forward gently to stretch chest muscles (Pectorals).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-mil-slate text-gray-400 py-6 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm">&copy; 2023 Military Conditioning Unit. Stay Disciplined.</p>
+        </div>
+    </footer>
+
+    <!-- LOGIC CORE -->
+    <script>
+        // --- 1. Data Definitions ---
+        
+        // Structure: 4 Phases (Week blocks) -> 7 Days -> Exercises
+        const trainingData = {
+            1: { // Weeks 1-2
+                title: "Base Conditioning",
+                days: {
+                    Mon: {
+                        title: "Strength A (Push Focus)",
+                        focus: "Chest, Shoulders, Triceps",
+                        time: "45 Min",
+                        note: "Focus on perfect form. 2-0-2 Tempo.",
+                        exercises: [
+                            { name: "Pushup Progression", sets: "4", reps: "AMRAP - 2", rest: "90s", note: "Stop 2 reps before failure" },
+                            { name: "DB Flat Bench Press", sets: "3", reps: "10-12", rest: "90s", note: "Controlled eccentric" },
+                            { name: "DB Overhead Press", sets: "3", reps: "10-12", rest: "90s", note: "Standing, core tight" },
+                            { name: "DB Lateral Raises", sets: "3", reps: "12-15", rest: "60s", note: "Elbows slightly bent" },
+                            { name: "Bench Dips", sets: "3", reps: "Max", rest: "60s", note: "Feet on floor" }
+                        ]
+                    },
+                    Tue: {
+                        title: "Cardio & Core",
+                        focus: "Endurance & Abs",
+                        time: "40 Min",
+                        note: "Maintain steady heart rate.",
+                        exercises: [
+                            { name: "Treadmill Jog", sets: "1", reps: "20 Mins", rest: "N/A", note: "Steady state, 60-70% effort" },
+                            { name: "Standard Situps", sets: "3", reps: "15-20", rest: "60s", note: "Hook feet if needed" },
+                            { name: "Plank Hold", sets: "3", reps: "30-45s", rest: "60s", note: "Glutes tight" },
+                            { name: "Russian Twists", sets: "3", reps: "20 total", rest: "60s", note: "Feet off ground if able" },
+                            { name: "Neck Drills (Chin Tucks)", sets: "3", reps: "15", rest: "30s", note: "See Logistics Section" }
+                        ]
+                    },
+                    Wed: {
+                        title: "Strength B (Pull/Legs)",
+                        focus: "Back, Legs, Biceps",
+                        time: "50 Min",
+                        note: "Focus on the squeeze.",
+                        exercises: [
+                            { name: "DB Goblet Squats", sets: "4", reps: "12", rest: "90s", note: "Heels flat, chest up" },
+                            { name: "DB Lunges", sets: "3", reps: "10/leg", rest: "90s", note: "Knee touches ground lightly" },
+                            { name: "DB Bent Over Rows", sets: "3", reps: "12", rest: "90s", note: "Flat back, pull to hip" },
+                            { name: "DB Bicep Curls", sets: "3", reps: "12", rest: "60s", note: "No swinging" },
+                            { name: "Scapular Retractions", sets: "3", reps: "15", rest: "45s", note: "Posture correction drill" }
+                        ]
+                    },
+                    Thu: {
+                        title: "Cardio & Posture",
+                        focus: "Recovery & Alignment",
+                        time: "35 Min",
+                        note: "Active recovery focus.",
+                        exercises: [
+                            { name: "Treadmill Walk (Incline)", sets: "1", reps: "25 Mins", rest: "N/A", note: "Incline 5-8%, Speed 4-5km/h" },
+                            { name: "Wall Angels", sets: "3", reps: "10", rest: "45s", note: "Slow control" },
+                            { name: "Doorway Stretch", sets: "2", reps: "30s", rest: "30s", note: "Deep breath into chest" },
+                            { name: "Lying Leg Raises", sets: "3", reps: "12", rest: "60s", note: "Lower back glued to floor" }
+                        ]
+                    },
+                    Fri: {
+                        title: "Strength C (Full Body)",
+                        focus: "Hypertrophy Mix",
+                        time: "50 Min",
+                        note: "Volume day. Moderate weight.",
+                        exercises: [
+                            { name: "Pushups (Wide)", sets: "3", reps: "Max", rest: "90s", note: "Chest focus" },
+                            { name: "DB Step Ups", sets: "3", reps: "10/leg", rest: "90s", note: "Use bench" },
+                            { name: "DB Shoulder Press", sets: "3", reps: "10", rest: "90s", note: "Seated or standing" },
+                            { name: "DB Hammer Curls", sets: "3", reps: "12", rest: "60s", note: "For forearms/arms" },
+                            { name: "DB Skullcrushers", sets: "3", reps: "12", rest: "60s", note: "On floor or bench" }
+                        ]
+                    },
+                    Sat: {
+                        title: "Active Recovery",
+                        focus: "Mobility",
+                        time: "30 Min",
+                        note: "Light movement only.",
+                        exercises: [
+                            { name: "Light Walk", sets: "1", reps: "30 Mins", rest: "N/A", note: "Outdoor preferred" },
+                            { name: "Full Body Stretching", sets: "1", reps: "10 Mins", rest: "N/A", note: "Focus on tight areas" }
+                        ]
+                    },
+                    Sun: {
+                        title: "Rest Day",
+                        focus: "Rest",
+                        time: "0 Min",
+                        note: "Eat well, sleep well.",
+                        exercises: [
+                            { name: "Rest", sets: "-", reps: "-", rest: "-", note: "No structured activity" }
+                        ]
+                    }
+                }
+            },
+            2: { // Weeks 3-4
+                title: "Hypertrophy Build",
+                days: {
+                    Mon: {
+                        title: "Strength A (Push Focus)",
+                        focus: "Chest, Shoulders",
+                        time: "50 Min",
+                        note: "Increase weight from last phase.",
+                        exercises: [
+                            { name: "Pushup Progression", sets: "4", reps: "Target: 15+", rest: "60s", note: "Less rest time" },
+                            { name: "DB Bench Press", sets: "4", reps: "10", rest: "90s", note: "Heavier weight" },
+                            { name: "DB Flys", sets: "3", reps: "12", rest: "60s", note: "Stretch at bottom" },
+                            { name: "DB Arnold Press", sets: "3", reps: "10", rest: "90s", note: "Rotation movement" },
+                            { name: "Tricep Kickbacks", sets: "3", reps: "15", rest: "45s", note: "High reps burn" }
+                        ]
+                    },
+                    Tue: {
+                        title: "Cardio Intervals",
+                        focus: "HIIT & Abs",
+                        time: "35 Min",
+                        note: "High intensity intervals.",
+                        exercises: [
+                            { name: "Treadmill HIIT", sets: "10", reps: "1m Run/1m Walk", rest: "N/A", note: "Run at 80-90% effort" },
+                            { name: "Weighted Situps", sets: "3", reps: "15", rest: "60s", note: "Hold small DB to chest" },
+                            { name: "Bicycle Crunches", sets: "3", reps: "30s", rest: "45s", note: "Elbow to opposite knee" },
+                            { name: "Neck Drills", sets: "3", reps: "15", rest: "30s", note: "Chin Tucks" }
+                        ]
+                    },
+                    Wed: {
+                        title: "Strength B (Pull/Legs)",
+                        focus: "Back, Legs",
+                        time: "55 Min",
+                        note: "Volume increase.",
+                        exercises: [
+                            { name: "DB Squats", sets: "5", reps: "10", rest: "90s", note: "Deep range of motion" },
+                            { name: "DB RDLs", sets: "3", reps: "12", rest: "90s", note: "Hamstring stretch focus" },
+                            { name: "DB One Arm Row", sets: "3", reps: "10/arm", rest: "90s", note: "Heavy control" },
+                            { name: "DB Hammer Curls", sets: "4", reps: "10", rest: "60s", note: "Heavy" },
+                            { name: "Face Pulls (Towel)", sets: "3", reps: "15", rest: "45s", note: "Posture" }
+                        ]
+                    },
+                    Thu: {
+                        title: "Steady State Cardio",
+                        focus: "Endurance",
+                        time: "45 Min",
+                        note: "Zone 2 Heart Rate.",
+                        exercises: [
+                            { name: "Treadmill Run", sets: "1", reps: "30 Mins", rest: "N/A", note: "Consistent pace" },
+                            { name: "Wall Angels", sets: "3", reps: "12", rest: "45s", note: "Posture" },
+                            { name: "Plank", sets: "3", reps: "60s", rest: "60s", note: "Hold strict" }
+                        ]
+                    },
+                    Fri: {
+                        title: "Strength C (Full Body)",
+                        focus: "Metabolic Conditioning",
+                        time: "45 Min",
+                        note: "Minimize rest periods.",
+                        exercises: [
+                            { name: "Pushups (Diamond)", sets: "3", reps: "Max", rest: "60s", note: "Tricep focus" },
+                            { name: "DB Thrusters", sets: "3", reps: "10", rest: "90s", note: "Squat to Press" },
+                            { name: "DB Lunges", sets: "3", reps: "20 total", rest: "60s", note: "Alternating" },
+                            { name: "DB Curls -> Press", sets: "3", reps: "10", rest: "60s", note: "Compound movement" }
+                        ]
+                    },
+                    Sat: {
+                        title: "Active Recovery",
+                        focus: "Mobility",
+                        time: "30 Min",
+                        note: "Light movement.",
+                        exercises: [
+                            { name: "Yoga/Stretching", sets: "1", reps: "20 Mins", rest: "N/A", note: "Full body flow" }
+                        ]
+                    },
+                    Sun: {
+                        title: "Rest Day",
+                        focus: "Rest",
+                        time: "0 Min",
+                        note: "Prepare for Week 5 intensity.",
+                        exercises: [
+                            { name: "Rest", sets: "-", reps: "-", rest: "-", note: "Sleep & Eat" }
+                        ]
+                    }
+                }
+            },
+            3: { // Weeks 5-6 (Peak - Logic reuse for brevity but implies higher intensity)
+                title: "Peak Intensity",
+                days: {
+                    Mon: { title: "Strength A", focus: "Heavy Push", time: "50m", note: "Failure on last set", exercises: [{name: "Pushups (Weighted)", sets: "4", reps: "10-12", rest: "90s", note: "Wear backpack if needed"}, {name: "DB Bench", sets: "4", reps: "8", rest: "2m", note: "Heavy"}, {name: "DB Lateral Raise", sets: "4", reps: "15", rest: "45s", note: "Burnout"}] },
+                    Tue: { title: "Sprints", focus: "Speed", time: "30m", note: "Max effort sprints", exercises: [{name: "Treadmill Sprints", sets: "8", reps: "30s Sprint/90s Rest", rest: "-", note: "Max speed"}, {name: "V-Ups", sets: "3", reps: "15", rest: "60s", note: "Abs"}] },
+                    Wed: { title: "Strength B", focus: "Heavy Pull/Legs", time: "55m", note: "Go Heavy", exercises: [{name: "DB Squats", sets: "5", reps: "8", rest: "2m", note: "Heavy"}, {name: "DB Rows", sets: "4", reps: "8", rest: "90s", note: "Heavy"}, {name: "Curls", sets: "4", reps: "10", rest: "60s", note: "Strict"}] },
+                    Thu: { title: "LISS Cardio", focus: "Recovery", time: "45m", note: "Long slow distance", exercises: [{name: "Treadmill Incline Walk", sets: "1", reps: "40 Mins", rest: "-", note: "Steep incline"}, {name: "Posture Drills", sets: "3", reps: "Circuit", rest: "-", note: "All drills"}] },
+                    Fri: { title: "Strength C", focus: "Volume", time: "50m", note: "High Reps", exercises: [{name: "Pushups", sets: "5", reps: "50% max", rest: "30s", note: "Speed focus"}, {name: "DB Lunges", sets: "3", reps: "12/leg", rest: "60s", note: "Constant tension"}, {name: "Shoulder Press", sets: "4", reps: "12", rest: "60s", note: "Pump"}] },
+                    Sat: { title: "Active Rec", focus: "Mobility", time: "30m", note: "-", exercises: [{name: "Stretch", sets: "-", reps: "30m", rest: "-", note: "-"}] },
+                    Sun: { title: "Rest", focus: "Rest", time: "-", note: "-", exercises: [{name: "Rest", sets: "-", reps: "-", rest: "-", note: "-"}] }
+                }
+            },
+            4: { // Weeks 7-8 (Test)
+                title: "Test & Taper",
+                days: {
+                    Mon: { title: "Mock Test", focus: "Pushups/Situps", time: "40m", note: "Test Day Simulation", exercises: [{name: "Pushups Max", sets: "1", reps: "Max Effort", rest: "N/A", note: "Record score"}, {name: "Situps Max", sets: "1", reps: "2 Mins Max", rest: "N/A", note: "Record score"}, {name: "Light Flush", sets: "3", reps: "15", rest: "60s", note: "Light DB movements"}] },
+                    Tue: { title: "Easy Cardio", focus: "Bloodflow", time: "30m", note: "Keep it light", exercises: [{name: "Jog", sets: "1", reps: "20m", rest: "-", note: "Easy pace"}] },
+                    Wed: { title: "Full Body Tone", focus: "Maintenance", time: "40m", note: "Do not fatigue", exercises: [{name: "Squats", sets: "3", reps: "10", rest: "90s", note: "Medium weight"}, {name: "Pushups", sets: "3", reps: "10", rest: "90s", note: "Easy pace"}, {name: "Rows", sets: "3", reps: "10", rest: "90s", note: "Medium"}] },
+                    Thu: { title: "Mobility", focus: "Posture", time: "30m", note: "Feel good", exercises: [{name: "All Posture Drills", sets: "2", reps: "10", rest: "-", note: "Loose and limber"}] },
+                    Fri: { title: "Final Test", focus: "Execution", time: "60m", note: "Final Assessment", exercises: [{name: "Max Pushups", sets: "1", reps: "Test", rest: "-", note: "Goal: 50+"}, {name: "Max Situps", sets: "1", reps: "Test", rest: "-", note: "Goal: 60+"}, {name: "5k Run", sets: "1", reps: "Time", rest: "-", note: "Goal: <25m"}] },
+                    Sat: { title: "Rest", focus: "-", time: "-", note: "Mission Complete", exercises: [{name: "Rest", sets: "-", reps: "-", rest: "-", note: "-"}] },
+                    Sun: { title: "Rest", focus: "-", time: "-", note: "Mission Complete", exercises: [{name: "Rest", sets: "-", reps: "-", rest: "-", note: "-"}] }
+                }
+            }
+        };
+
+        // State Variables
+        let currentPhase = 1;
+        let currentDay = 'Mon';
+
+        // --- 2. Chart Initialization ---
+        
+        function initCharts() {
+            // Chart 1: Focus (Doughnut)
+            const ctxFocus = document.getElementById('focusChart').getContext('2d');
+            new Chart(ctxFocus, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Chest/Push', 'Arms', 'Neck/Posture', 'Shoulders', 'Abs/Core'],
+                    datasets: [{
+                        data: [30, 30, 15, 15, 10], // From prompt percentages
+                        backgroundColor: [
+                            '#4B5320', // Olive
+                            '#748032', // Light Olive
+                            '#3C4142', // Slate
+                            '#D2B48C', // Sand
+                            '#8B0000'  // Alert Red
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right' }
+                    }
+                }
+            });
+
+            // Chart 2: Progression (Line)
+            const ctxProg = document.getElementById('progressionChart').getContext('2d');
+            new Chart(ctxProg, {
+                type: 'line',
+                data: {
+                    labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6', 'Wk 7', 'Wk 8'],
+                    datasets: [
+                        {
+                            label: 'Pushup Target (Reps)',
+                            data: [30, 32, 36, 40, 45, 50, 52, 55],
+                            borderColor: '#4B5320',
+                            backgroundColor: 'rgba(75, 83, 32, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Situp Target (Reps)',
+                            data: [35, 38, 42, 45, 50, 55, 60, 65],
+                            borderColor: '#D2B48C',
+                            backgroundColor: 'transparent',
+                            borderDash: [5, 5],
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: false }
+                    }
+                }
+            });
+        }
+
+        // --- 3. Interaction Logic ---
+
+        function setPhase(phase) {
+            currentPhase = phase;
+            
+            // Update buttons styling
+            for(let i=1; i<=4; i++) {
+                const btn = document.getElementById(`phase${i}Btn`);
+                if(i === phase) {
+                    btn.classList.add('bg-mil-olive', 'text-white');
+                    btn.classList.remove('text-mil-olive');
+                } else {
+                    btn.classList.remove('bg-mil-olive', 'text-white');
+                    btn.classList.add('text-mil-olive');
+                }
+            }
+            
+            // Refresh content
+            renderWorkout();
+        }
+
+        function setDay(day) {
+            currentDay = day;
+            
+            // Update day buttons styling
+            const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+            days.forEach(d => {
+                const btn = document.getElementById(`btn${d}`);
+                if(d === day) {
+                    btn.classList.add('day-btn-active', 'bg-mil-olive', 'text-white');
+                    btn.classList.remove('hover:bg-gray-200');
+                    // Reset opacity span color
+                    btn.querySelector('span:last-child').classList.remove('bg-gray-200');
+                    btn.querySelector('span:last-child').classList.add('bg-white', 'text-mil-olive', 'opacity-100');
+                } else {
+                    btn.classList.remove('day-btn-active', 'bg-mil-olive', 'text-white');
+                    btn.classList.add('hover:bg-gray-200');
+                    // Reset opacity span
+                    btn.querySelector('span:last-child').classList.add('bg-gray-200', 'opacity-50');
+                    btn.querySelector('span:last-child').classList.remove('bg-white', 'text-mil-olive', 'opacity-100');
+                }
+            });
+
+            renderWorkout();
+        }
+
+        function renderWorkout() {
+            const data = trainingData[currentPhase].days[currentDay];
+            
+            // Fade effect
+            const container = document.getElementById('workoutContent');
+            container.style.opacity = '0.5';
+            
+            setTimeout(() => {
+                // Update Header
+                document.getElementById('workoutTitle').innerText = data.title.toUpperCase();
+                document.getElementById('workoutFocus').innerText = `FOCUS: ${data.focus}`;
+                document.getElementById('estDuration').innerText = data.time.toUpperCase();
+                document.getElementById('tacticalNote').innerText = data.note;
+
+                // Update Table
+                const tbody = document.getElementById('exerciseTableBody');
+                tbody.innerHTML = '';
+
+                data.exercises.forEach(ex => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50 transition border-b border-gray-100';
+                    row.innerHTML = `
+                        <td class="px-4 py-4 font-bold text-gray-800">${ex.name}</td>
+                        <td class="px-4 py-4 text-gray-600 font-mono">${ex.sets}</td>
+                        <td class="px-4 py-4 text-gray-600 font-mono">${ex.reps}</td>
+                        <td class="px-4 py-4 text-gray-500 text-xs">${ex.rest}</td>
+                        <td class="px-4 py-4 text-gray-500 text-xs italic">${ex.note}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                container.style.opacity = '1';
+            }, 150);
+        }
+
+        // --- 4. Initialization ---
+        window.onload = function() {
+            initCharts();
+            setPhase(1); // Default to Week 1
+            setDay('Mon'); // Default to Monday
+        };
+
+    </script>
+</body>
+</html>
